@@ -12,7 +12,7 @@
 
 获取源代码： git clone https://github.com/cuncle/upyun-swfupload-example.git
 
-编辑 index.php 文件，填写您的BUCKET和Form_Api_Secret，表单密钥通过后台——>服务——>功能配置——>高级功能——>表单API密钥获取。
+编辑 index.php 文件，修改您的服务名，操作员，操作员密码。
 
 **说明**
 
@@ -22,7 +22,7 @@
 			file_post_name : "file",//相当于用普通的文件域上传文件时的name属性，服务器端接收页面通过该名称来获取上传的文件
 			post_params: {
 			"policy" : "<?php echo $policy;?>",//policy传递
-			"signature" : "<?php echo $signature; ?>"},//sigenature参数传递
+			"authorization" : "<?php echo $authorization; ?>"},//authorization参数传递
 ```
 
 上传文件后，可以通过UPYUN外链方式访问获取上传的文件。
