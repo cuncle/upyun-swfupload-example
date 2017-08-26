@@ -1,12 +1,24 @@
-<?php 
-$bucket = 'bucket';//upyun空间名
-$form_api_secret = 'form_api_secret';//表单密钥：后台——>空间——>通用——>基本设置
+<?php
+//必须需要修改的参数
+//#################################################################################################
+$bucket = 'bucket';//又拍云的服务名
+//$form_api_secret = 'form_api_secret';//表单密钥：后台——>空间——>通用——>基本设置
+$operator ='operator'; //授权的操作员
+$password = md5('password'); // 授权的操作员密码
+//#################################################################################################
+$GMTdate = gmdate('D, d M Y H:i:s') . ' GMT';
+$method = 'POST';
+$URI = '/'.$bucket;
 $options = array();
 $options['bucket'] = $bucket;
 $options['expiration'] = time()+3600;
 $options['save-key'] = '/{year}/{mon}/{day}/upload_{filename}{.suffix}';//save-key 详细说明可以看官方文档
+$options['date'] = $GMTdate;
 $policy = base64_encode(json_encode($options));//policy 生成
-$signature = md5($policy.'&'.$form_api_secret);// sigenature生成
+$str = $method.'&'.$URI.'&'.$GMTdate.'&'.$policy;
+$signature = base64_encode(hash_hmac('sha1',$str, $password, true));
+$authorization = "UPYUN {$operator}:{$signature}";
+//$signature = md5($policy.'&'.$form_api_secret);// sigenature生成
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" >
@@ -28,7 +40,7 @@ var swfu;
 				file_post_name : "file", //相当于用普通的文件域上传文件时的name属性，服务器端接收页面通过该名称来获取上传的文件
 				post_params: {
 				"policy" : "<?php echo $policy;?>",//policy传递
-				"signature" : "<?php echo $signature; ?>"},//sigenature参数传递
+				"authorization" : "<?php echo $authorization; ?>"},//sigenature参数传递
 				file_size_limit : "100 MB",//指定要上传的文件的最大体积，可以带单位，合法的单位有:B、KB、MB、GB，如果省略了单位，则默认为KB。该属性为0时，表示不限制文件的大小。
 				file_types : "*.*", //指定了允许上传的文件类型，当有多个类型时使用分号隔开，比如：*.jpg;*.png ,允许所有类型时请使用 *.*
 				file_types_description : "All Files",//指定在文件选取窗口中显示的文件类型描述，起一个提示和说明的作用吧 
